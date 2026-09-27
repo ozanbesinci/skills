@@ -2,10 +2,10 @@
 
 Windows üzerinde Python, desteklenen Python kütüphaneleri, Node.js, pnpm,
 DuckDB, Power BI Modeling MCP ve `teklif-degerlendirme` skill sürümlerini tek
-panelde karşılaştıran Codex ve Claude Code skill'i.
+sohbet tablosunda karşılaştıran masaüstü Work ve Codex skill'i.
 
-**Güncel kararlı sürüm:** 2.0.0
-**Kurulum paketi:** `guncelleyici-v2.0.0.zip` ve SHA-256 kaydı
+**Güncel kararlı sürüm:** 2.1.0
+**Kurulum paketi:** `guncelleyici-v2.1.0.zip` ve SHA-256 kaydı
 
 ## Kurulum
 
@@ -20,17 +20,18 @@ doğrulayın.
 “Güncelleyiciyi çalıştır” isteğiyle skill önce yüklü sürümleri ve kararlı
 yayınları kontrol eder. Eksik bileşenler **Yüklü değil** gösterilir;
 yükleme veya güncelleme gereken satırlar varsayılan işaretli gelir. Kullanıcı
-seçimleri değiştirebilir. Bütün bileşenler güncelse panel açılmadan
+seçimleri değiştirebilir. Bütün bileşenler güncelse tablo açılmadan
 **Güncelsiniz.** sonucu verilir. İnternet kontrolü başarısız olan satır
 güncel kabul edilmez.
 
-**Güncelle** düğmesine basılınca seçim penceresi kapanır, seçilen işlemler
-sırayla tamamlanır ve sonuç tablosu sohbette gösterilir. Düğmeye basılmadan
+Kullanıcı sohbette **Güncelle** dediğinde seçilen işlemler sırayla tamamlanır
+ve sonuç tablosu sohbette gösterilir. Bu yanıt verilmeden
 kurulum başlamaz. `teklif-degerlendirme` güncellemesi yalnız o skill'i
 değiştirir; kararlı paket `ozanbesinci/teklif-degerlendirme` Release
 sayfasından SHA-256 ile doğrulanır.
 
-Önceki `program-guncelle` ve `program-guncelleme` kurulumları standart
+Kullanıcı **Güncelle** dedikten sonra önceki `program-guncelle` ve
+`program-guncelleme` kurulumları standart
 kullanıcı yollarında doğrulanarak kaldırılır. `guncelleyici` kendi kaynağını
 bu işlemde değiştirmez.
 

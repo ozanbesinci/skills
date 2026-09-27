@@ -4,7 +4,12 @@ Sürümleme: büyük sürüm akış değişikliklerini, küçük sürüm yeni a�
 kontrolleri, yama sürümü düzeltmeleri belirtir. Yayımlanmamış değişiklikler
 yerel geliştirme durumundadır.
 
-## Yayımlanmamış
+## v2.1.0 — 2026-09-28
+
+- Masaüstü Work ve Codex için sürüm seçimi sohbet tablosuna taşındı; PowerShell penceresi açılmadan `scan` ve açık kullanıcı seçiminden sonra `apply` çalışır.
+- Tarama parmak iziyle sürüm değişikliği kontrolü, seçilemeyen satır reddi ve sıralı sonuç kaydı eklendi.
+- DuckDB salt okuma taraması sonuç dosyası veya hata raporu yazmadan `@@SONUC` döndürür.
+- Eski skill temizliği salt okuma taramasından çıkarılıp açık **Güncelle** seçiminin uygulama aşamasına taşındı.
 
 ## v2.0.0 — 2026-09-27
 

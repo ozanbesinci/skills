@@ -210,7 +210,8 @@ def bagimlilik_denetimi():
     ekle("Bağımlılık uyumu", "UYARI", "pip check: " + " | ".join(sorun[:4])[-400:])
 
 
-def bitir(anahtar, tanim, durum, kurulu_once, kurulu_son, hedef, pypi, neden, it_isi, kurulanlar, rapor_yolu, sure):
+def bitir(anahtar, tanim, durum, kurulu_once, kurulu_son, hedef, pypi, neden, it_isi, kurulanlar, rapor_yolu, sure,
+          kaydet=True):
     d = [s["durum"] for s in sonuclar]
     ozet = ("ENGEL" if durum == "BASARISIZ" or "ENGEL" in d else "UYARI" if durum == "ESKI" or "UYARI" in d
             else "BİLGİ" if durum == "YOK" else "GEÇTİ")
@@ -231,11 +232,11 @@ def bitir(anahtar, tanim, durum, kurulu_once, kurulu_son, hedef, pypi, neden, it
     s += [f"[{x['durum']:<5}] {x['ad']}: {x['ayrinti']}" for x in sonuclar]
     if it_isi:
         s.append(f"IT'den gereken: {it_isi}")
-    if rapor_yolu and os.path.exists(rapor_yolu):
+    if kaydet and rapor_yolu and os.path.exists(rapor_yolu):
         with open(rapor_yolu, "a", encoding="utf-8") as f:
             f.write("\n".join(s) + "\n")
         sonuc["rapor"] = rapor_yolu
-    elif ozet == "ENGEL":
+    elif kaydet and ozet == "ENGEL":
         masaustu = os.path.join(os.environ.get("USERPROFILE", ""), "Desktop")
         try:
             import ctypes.wintypes
@@ -255,9 +256,10 @@ def bitir(anahtar, tanim, durum, kurulu_once, kurulu_son, hedef, pypi, neden, it
         with open(yol, "w", encoding="utf-8-sig") as f:
             f.write("\n".join(bas + s) + "\n")
         sonuc["rapor"] = yol
-    os.makedirs(DURUM_KLASORU, exist_ok=True)
-    with open(os.path.join(DURUM_KLASORU, f"{anahtar}-kur-sonuc.json"), "w", encoding="utf-8") as f:
-        json.dump(sonuc, f, ensure_ascii=False)
+    if kaydet:
+        os.makedirs(DURUM_KLASORU, exist_ok=True)
+        with open(os.path.join(DURUM_KLASORU, f"{anahtar}-kur-sonuc.json"), "w", encoding="utf-8") as f:
+            json.dump(sonuc, f, ensure_ascii=False)
     print("@@SONUC " + json.dumps(sonuc, ensure_ascii=False), flush=True)
     sys.exit(0)
 
@@ -294,9 +296,10 @@ def main():
             if once:
                 ekle("En yeni sürüm", "UYARI", f"öğrenilemedi ({neden}); kurulu {once} kullanılıyor")
                 bitir(args.paket, tanim, "ESKI", once, once, None, pypi, f"en yeni sürüm öğrenilemedi: {neden}",
-                      is_, [], args.rapor, time.time() - t0)
+                      is_, [], args.rapor, time.time() - t0, kaydet=not args.yalniz_bul)
             ekle("Kurulum", "ENGEL", f"{neden}. Son satırlar: {son_satirlar(hata)}")
-            bitir(args.paket, tanim, "BASARISIZ", None, None, None, pypi, neden, is_, [], args.rapor, time.time() - t0)
+            bitir(args.paket, tanim, "BASARISIZ", None, None, None, pypi, neden, is_, [], args.rapor, time.time() - t0,
+                  kaydet=not args.yalniz_bul)
         hedefp = next((p for p in liste if p["ad"].lower().replace("_", "-") == dagitim), None)
         hedef = hedefp["surum"] if hedefp else once
         print(f"  En yeni sürüm (bu Python için): {hedef}", flush=True)
@@ -305,11 +308,12 @@ def main():
             print(f"  {tanim['ad']} güncel, sonraki aşamaya geçiliyor.", flush=True)
             if not args.yalniz_bul:
                 test_et(args.paket)
-            bitir(args.paket, tanim, "MEVCUT", once, once, hedef, pypi, "", "", [], args.rapor, time.time() - t0)
+            bitir(args.paket, tanim, "MEVCUT", once, once, hedef, pypi, "", "", [], args.rapor, time.time() - t0,
+                  kaydet=not args.yalniz_bul)
         if args.yalniz_bul:
             bitir(args.paket, tanim, "ESKI" if once else "YOK", once, once, hedef, pypi,
                   "yalnız bakıldı; kurulacaklar: " + ", ".join(f"{p['ad']} {p['surum']}" for p in liste),
-                  "", [], args.rapor, time.time() - t0)
+                  "", [], args.rapor, time.time() - t0, kaydet=False)
 
         adlar = ", ".join(f"{p['ad']} {p['surum']}" for p in liste)
         print(f"  {'Güncelleniyor' if once else 'Kuruluyor'} (PyPI özetleriyle): {adlar}", flush=True)

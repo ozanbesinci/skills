@@ -5,13 +5,13 @@ Release paketlerini de okur; ZIP içindeki eski güncelleyici ağacını **kurma
 Yalnız `teklif-degerlendirme` ağacı yönetilir. Program kurucuları bu işlemde
 çalışmaz. Yerel aday ile yayımlanmış sürümü karıştırma.
 
-## Panel akışı ve bakım komutları
+## Sohbet akışı ve bakım komutları
 
-Normal kullanımda birleşik güncelleyicinin seçim paneli açılır. Panel,
+Normal kullanımda birleşik güncelleyici sürüm tablosunu sohbette gösterir.
 GitHub'daki en son kararlı Release paketinin SHA-256 değerini doğrulayarak
 `teklif-degerlendirme` bileşen sürümünü ilk tabloda gösterir. Yalnız bu satır
-işaretlenip **Güncelle** düğmesine basıldığında aşağıdaki `update` ve ardından
-`verify` çalışır. Yerel aday yayımlı sürümden ileriyse sürüm düşürülmez.
+seçildikten ve kullanıcı **Güncelle** dedikten sonra aşağıdaki `update` ve
+ardından `verify` çalışır. Yerel aday yayımlı sürümden ileriyse sürüm düşürülmez.
 
 Doğrudan bakım veya tanı gerektiğinde komutlar:
 
@@ -24,7 +24,7 @@ Doğrudan bakım veya tanı gerektiğinde komutlar:
 ```
 
 `check` sonucunda `latest` doğrulanmış bileşen sürümüdür; `release.version`
-paket etiketidir. Panel ve `update` aynı bileşen sürümüne göre karar verir.
+paket etiketidir. Sohbet tablosu ve `update` aynı bileşen sürümüne göre karar verir.
 `update` yalnız bileşen sürümü ileriyse çalışır; karar için doğrulanan paket
 kurulumda yeniden indirilmeden kullanılır.
 

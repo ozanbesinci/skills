@@ -1,15 +1,16 @@
 # Program ve ortam bileşenleri
 
-Tüm programlar [seçim paneli](../SKILL.md) üzerinden yönetilir. Betikler panelin
-ilk taramasında `-YalnizBul` veya `--yalniz-bul` ile çağrılır. Bu aşamada kurulum
-ve ayar değişikliği yapılmaz. Kullanıcının **Güncelle** düğmesine basması, yalnız
-işaretli satırların kurulumuna izin verir.
+Tüm programlar [sohbet içi seçim](../SKILL.md) üzerinden yönetilir. Betikler ilk
+taramada `-YalnizBul` veya `--yalniz-bul` ile çağrılır. Bu aşamada kurulum
+ve ayar değişikliği yapılmaz. Eski skill temizliği de bu aşamada çalışmaz.
+Kullanıcının sohbette **Güncelle** demesi, yalnız
+seçili satırların kurulumuna izin verir.
 Eksik bileşen “Yüklü değil” olarak gösterilir; eksik ve eski bileşenlerin
-kutuları varsayılan işaretlidir. Bütün satırlar doğrulanmış biçimde güncelse
-tablo açılmaz. Güncelle tıklamasında seçim penceresi kapanır; betik seçilenleri
-tamamlayıp sıralı sonuç verisini `@@SONUC` ile döndürür.
+satırları varsayılan seçilidir. Bütün satırlar doğrulanmış biçimde güncelse
+sohbette tablo gösterilmez. Güncelle yanıtında betik seçilenleri tamamlayıp
+sıralı sonuç verisini `@@SONUC` ile döndürür.
 
-| Panel satırı | Sürüm kaynağı | Kurulum betiği |
+| Sohbet satırı | Sürüm kaynağı | Kurulum betiği |
 |---|---|---|
 | Python | python.org, desteklenen serinin son kararlı yaması | `scripts/python-kur.ps1` |
 | Python kütüphaneleri (12) | Skill içinde sabit sürüm ve PyPI SHA-256 özetleri | `scripts/kurulum-testi.py` |
@@ -20,7 +21,7 @@ tamamlayıp sıralı sonuç verisini `@@SONUC` ile döndürür.
 
 Python kütüphaneleri tek set olarak seçilir. Sürüm sütunundaki “12 paket · sabit set”,
 skill ile doğrulanan paket sürümlerini temsil eder; internetin en yeni sürümleri
-olduğu iddia edilmez. Yüklü/ hedef paket sürümleri satır ipucunda görünür.
+olduğu iddia edilmez. Yüklü/hedef paket sürümleri `ayrinti` alanında görünür.
 `kurulum-testi.py` indirilen her dağıtımın özetini doğrular ve kütüphaneleri
 gerçek işle sınar. Python veya Node.js gerektiren satırlar, bağımlılık satırı
 seçilmemiş ve bilgisayarda mevcut değilse **hata** ile biter; diğer seçili
@@ -38,6 +39,6 @@ ve kurulum sonrası sürümün doğrulanamaması başarı sayılmaz. Tamamlanan 
 hedef sürüme ulaşılamadıysa uyarı gösterilir; uzun ayrıntılar sonuç hücresinin
 ipucunda ve varsa betiğin raporunda bulunur.
 
-İnternet veya sürüm kaynağı erişilemezse panel o satırı “Kontrol edilemedi”
+İnternet veya sürüm kaynağı erişilemezse sohbet tablosu o satırı “Kontrol edilemedi”
 gösterir; bilinen eski sürüm güncelmiş gibi sunulmaz. Kurulum yapılmış her
 satırın son durumu sohbet tablosuna aktarılacak sonuç kaydında bulunur.
