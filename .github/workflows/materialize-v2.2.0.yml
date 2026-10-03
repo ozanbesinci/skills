@@ -61,3 +61,5 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Materialize guncelleyici v2.2.0 source"
           git push origin HEAD:release/v2.2.0-staging
+
+# rerun after complete payload staging
