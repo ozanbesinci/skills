@@ -1,0 +1,63 @@
+name: Materialize guncelleyici v2.2.0
+
+on:
+  push:
+    branches:
+      - release/v2.2.0-staging
+    paths:
+      - '.github/workflows/materialize-v2.2.0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout staging
+        uses: actions/checkout@v4
+        with:
+          ref: release/v2.2.0-staging
+          fetch-depth: 0
+
+      - name: Rebuild and verify source payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/guncelleyici-v2.2.0
+          cat .publish-v2.2.0/payload-*.txt | base64 -d > /tmp/guncelleyici-v2.2.0/payload.tgz
+          echo "8527bbb1224ab7d496ed9c4d0f69c72f4b96f4e9a14c8b011f922be88f4694cd  /tmp/guncelleyici-v2.2.0/payload.tgz" | sha256sum -c -
+          mkdir -p /tmp/guncelleyici-v2.2.0/unpack
+          tar -xzf /tmp/guncelleyici-v2.2.0/payload.tgz -C /tmp/guncelleyici-v2.2.0/unpack
+          test "$(cat /tmp/guncelleyici-v2.2.0/unpack/skills/guncelleyici/VERSION)" = "2.2.0"
+          python -B /tmp/guncelleyici-v2.2.0/unpack/skills/guncelleyici/tests/run_tests.py --output /tmp/guncelleyici-v2.2.0/tests.json
+          python - <<'PY'
+          import json
+          p='/tmp/guncelleyici-v2.2.0/tests.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d.get('status') == 'PASS', d
+          assert d.get('passed') == 110, d
+          PY
+
+      - name: Materialize source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf skills/guncelleyici
+          cp -a /tmp/guncelleyici-v2.2.0/unpack/skills/guncelleyici skills/guncelleyici
+          cp /tmp/guncelleyici-v2.2.0/unpack/README.md README.md
+          rm -rf .publish-v2.2.0
+          rm -f .github/workflows/materialize-v2.2.0.yml
+          git status --short
+
+      - name: Commit verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Materialize guncelleyici v2.2.0 source"
+          git push origin HEAD:release/v2.2.0-staging
