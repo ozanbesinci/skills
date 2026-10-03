@@ -65,3 +65,5 @@ jobs:
 # rerun after complete payload staging
 
 # rerun after payload-01a/01b completion
+
+# rerun after verified 124764-char payload reconstruction
