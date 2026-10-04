@@ -1,46 +1,57 @@
 # Güncelleyici
 
 Windows üzerinde Python, desteklenen Python kütüphaneleri, Node.js, pnpm,
-DuckDB, Power BI Modeling MCP ve `teklif-degerlendirme` skill sürümlerini tek
-sohbet tablosunda karşılaştıran masaüstü Work ve Codex skill'i.
+DuckDB, Power BI Modeling MCP, isteğe bağlı DuckDB PDF eklentisi ve
+`teklif-degerlendirme` skill sürümlerini ChatGPT Desktop Work/Codex sohbetinden
+yöneten skill.
 
-**Güncel kararlı sürüm:** 2.1.0
-**Kurulum paketi:** `guncelleyici-v2.1.0.zip` ve SHA-256 kaydı
+**Güncel kaynak sürüm:** 2.2.0  
+**Kaynak yolu:** `skills/guncelleyici/`  
+**GitHub Release:** `v2.2.0` (`skill.zip` + `skill.zip.sha256`).
 
-## Kurulum
+> 2.2.0 kaynak ve GitHub Release olarak yayımlanmıştır; `BUILD.json` içindeki
+> `production_approved=false` korunur. Düzeltilmiş Windows PowerShell 5.1 kabul
+> testi, gerçek kurucular/Authenticode, Excel COM, Power BI native MCP ve DuckDB
+> PDF native kabul adımları henüz PASS olarak işaretlenmemiştir.
 
-Codex'e veya Claude Code'a `ozanbesinci/guncelleyici` deposundaki
-`skills/guncelleyici` yolunu kurmasını söyleyin. Elle kurulumda Release
-paketindeki `guncelleyici/` klasörünü kullanıcı skill dizinine yerleştirin.
-Paketin SHA-256 değerini yanında yayımlanan `.zip.sha256` dosyasıyla
-doğrulayın.
+## Kurulum ve kullanım
 
-## Kullanım
+ChatGPT Desktop Work/Codex, bu depodaki `skills/guncelleyici/` yolunu skill olarak
+kullanmalıdır. Kaynak sürüm `VERSION` ve `BUILD.json` ile doğrulanır.
 
-“Güncelleyiciyi çalıştır” isteğiyle skill önce yüklü sürümleri ve kararlı
-yayınları kontrol eder. Eksik bileşenler **Yüklü değil** gösterilir;
-yükleme veya güncelleme gereken satırlar varsayılan işaretli gelir. Kullanıcı
-seçimleri değiştirebilir. Bütün bileşenler güncelse tablo açılmadan
-**Güncelsiniz.** sonucu verilir. İnternet kontrolü başarısız olan satır
-güncel kabul edilmez.
 
-Kullanıcı sohbette **Güncelle** dediğinde seçilen işlemler sırayla tamamlanır
-ve sonuç tablosu sohbette gösterilir. Bu yanıt verilmeden
-kurulum başlamaz. `teklif-degerlendirme` güncellemesi yalnız o skill'i
-değiştirir; kararlı paket `ozanbesinci/teklif-degerlendirme` Release
-sayfasından SHA-256 ile doğrulanır.
+Normal kullanıcı Terminal/PowerShell açmaz. ChatGPT Desktop Work veya Codex'te:
 
-Kullanıcı **Güncelle** dedikten sonra önceki `program-guncelle` ve
-`program-guncelleme` kurulumları standart
-kullanıcı yollarında doğrulanarak kaldırılır. `guncelleyici` kendi kaynağını
-bu işlemde değiştirmez.
+**“Güncelleyiciyi çalıştır”**
 
-## Gereksinimler
+isteği verilir. Skill yerel komutları kendi araçlarıyla arka planda yürütür ve
+sürüm/seçim tablosunu sohbette gösterir. Seçimi değiştirmek kurulum yetkisi
+değildir; ancak kullanıcı açıkça **“Güncelle”** / **“bu seçimleri uygula”** dediğinde
+sabitlenmiş plan uygulanır.
 
-- Windows PowerShell 5.1
-- İnternet erişimi: python.org, PyPI, nodejs.org, npm kayıt deposu,
-  Visual Studio Marketplace ve GitHub (yalnız seçilen bileşenler için)
-- Sistem geneline kurulmuş uygulamaları değiştirmek için gerektiğinde IT yetkisi
+## 2.2.0 öne çıkanları
 
-Kaynak ve değişiklikler: [`skills/guncelleyici/`](skills/guncelleyici/),
-[`CHANGELOG.md`](skills/guncelleyici/CHANGELOG.md).
+- Pro denetimindeki Y1–Y7 ve O1–O7 güvenilirlik bulguları için kod ve regresyon
+  kontrolleri.
+- Değişmez kurulum planı, kilit altında yeniden doğrulama ve açık `-ConfirmApply`.
+- Power BI MCP ayarlarında bilinmeyen alanları koruyan atomik yazım/rollback.
+- Sürüm uygunluğu ile işlev sağlığının ayrılması; `verify` ve kontrollü `repair`.
+- Python paket downgrade etkilerinin onay öncesi görünür olması ve bakım penceresi.
+- Windows amd64/PowerShell 5.1 çalışma kapısı.
+- İsteğe bağlı, varsayılan seçili olmayan DuckDB PDF bileşeni.
+- Son kullanıcı için Work/Codex **chat-only** yüzeyi; terminal komutları yalnız ajan-içi
+  yürütme veya geliştirici/BT kabul testi içindir.
+
+## Doğrulama
+
+- 110/110 çevrimdışı regresyon testi PASS.
+- Skill validator PASS.
+- Paket açıldıktan sonra 110/110 tekrar test PASS.
+- Kaynak manifesti 42 dosyayı SHA-256 ile bağlar.
+
+Çalıştırılmayan native Windows kabul adımları başarı olarak gösterilmez; ayrıntı için
+`skills/guncelleyici/BUILD.json` ve
+`skills/guncelleyici/references/TEST_RAPORU.md` dosyalarına bakın.
+
+Kaynak: [`skills/guncelleyici/`](skills/guncelleyici/)  
+Sürüm geçmişi: [`CHANGELOG.md`](skills/guncelleyici/CHANGELOG.md)
