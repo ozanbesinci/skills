@@ -1,57 +1,17 @@
 # Güncelleyici
 
-Windows üzerinde Python, desteklenen Python kütüphaneleri, Node.js, pnpm,
-DuckDB, Power BI Modeling MCP, isteğe bağlı DuckDB PDF eklentisi ve
-`teklif-degerlendirme` skill sürümlerini ChatGPT Desktop Work/Codex sohbetinden
-yöneten skill.
+Windows'ta Python, sabit12 kütüphane, Node.js, pnpm, DuckDB, Power BI Modeling MCP ve teklif-degerlendirme sürümünü Work/Codex sohbetinden yönetir. Açık seçim/onay, sabit plan/hash, bakım penceresi ve kalıcı kurtarma kaydı kullanır.
 
-**Güncel kaynak sürüm:** 2.2.0  
-**Kaynak yolu:** `skills/guncelleyici/`  
-**GitHub Release:** `v2.2.0` (`skill.zip` + `skill.zip.sha256`).
+**Kaynak2.2.1** · **Release v2.2.1** (skill.zip + skill.zip.sha256) · **Plugin Kılıç Satınalma1.1.4**.
 
-> 2.2.0 kaynak ve GitHub Release olarak yayımlanmıştır; `BUILD.json` içindeki
-> `production_approved=false` korunur. Düzeltilmiş Windows PowerShell 5.1 kabul
-> testi, gerçek kurucular/Authenticode, Excel COM, Power BI native MCP ve DuckDB
-> PDF native kabul adımları henüz PASS olarak işaretlenmemiştir.
+## Yayın ve kabul durumu
 
-## Kurulum ve kullanım
+Kaynak/paket yayını için hazırlanmıştır. production_approved=false; genel Windows kabulü **BLOCKED**. Gerçek normal kullanıcı PS5.1 x64 kurulumunda Python/Node/DuckDB/PBI server PASS; pnpm12.9.1 staging FAIL, teklif scan TLS BLOCKED, Excel yokluğu FAIL. Gerçek istemci/kalan native matris NOT_RUN.
 
-ChatGPT Desktop Work/Codex, bu depodaki `skills/guncelleyici/` yolunu skill olarak
-kullanmalıdır. Kaynak sürüm `VERSION` ve `BUILD.json` ile doğrulanır.
+2.2.1 yayın metadata/dokümantasyonudur; test edilen294cae9f scripts/tests/config byte'ları aynıdır. Native42Windows+29scan ve Python108PASS/2NOT_RUN; eski110/110 kayıtları yeni kabul sayılmaz. [BUILD](skills/guncelleyici/BUILD.json), [Windows kanıtı](skills/guncelleyici/references/WINDOWS_KABUL_2026-10-04.json), [test raporu](skills/guncelleyici/references/TEST_RAPORU.md).
 
+## Kullanım
 
-Normal kullanıcı Terminal/PowerShell açmaz. ChatGPT Desktop Work veya Codex'te:
+Work/Codex sohbetinde **“Güncelleyiciyi çalıştır”** de. Skill yerel Windows araçlarıyla tarar ve seçim tablosunu gösterir. Yalnız açık **“Güncelle / bu seçimleri uygula”** onayı verilen plan uygulanır. Kaynak yayınlama isteği canlı kurulum veya istemci ayarı değiştirme yetkisi değildir.
 
-**“Güncelleyiciyi çalıştır”**
-
-isteği verilir. Skill yerel komutları kendi araçlarıyla arka planda yürütür ve
-sürüm/seçim tablosunu sohbette gösterir. Seçimi değiştirmek kurulum yetkisi
-değildir; ancak kullanıcı açıkça **“Güncelle”** / **“bu seçimleri uygula”** dediğinde
-sabitlenmiş plan uygulanır.
-
-## 2.2.0 öne çıkanları
-
-- Pro denetimindeki Y1–Y7 ve O1–O7 güvenilirlik bulguları için kod ve regresyon
-  kontrolleri.
-- Değişmez kurulum planı, kilit altında yeniden doğrulama ve açık `-ConfirmApply`.
-- Power BI MCP ayarlarında bilinmeyen alanları koruyan atomik yazım/rollback.
-- Sürüm uygunluğu ile işlev sağlığının ayrılması; `verify` ve kontrollü `repair`.
-- Python paket downgrade etkilerinin onay öncesi görünür olması ve bakım penceresi.
-- Windows amd64/PowerShell 5.1 çalışma kapısı.
-- İsteğe bağlı, varsayılan seçili olmayan DuckDB PDF bileşeni.
-- Son kullanıcı için Work/Codex **chat-only** yüzeyi; terminal komutları yalnız ajan-içi
-  yürütme veya geliştirici/BT kabul testi içindir.
-
-## Doğrulama
-
-- 110/110 çevrimdışı regresyon testi PASS.
-- Skill validator PASS.
-- Paket açıldıktan sonra 110/110 tekrar test PASS.
-- Kaynak manifesti 42 dosyayı SHA-256 ile bağlar.
-
-Çalıştırılmayan native Windows kabul adımları başarı olarak gösterilmez; ayrıntı için
-`skills/guncelleyici/BUILD.json` ve
-`skills/guncelleyici/references/TEST_RAPORU.md` dosyalarına bakın.
-
-Kaynak: [`skills/guncelleyici/`](skills/guncelleyici/)  
-Sürüm geçmişi: [`CHANGELOG.md`](skills/guncelleyici/CHANGELOG.md)
+[Kaynak](skills/guncelleyici/) · [Sürüm geçmişi](skills/guncelleyici/CHANGELOG.md) · [Kabul/kurtarma](skills/guncelleyici/references/kabul-ve-kurtarma.md).

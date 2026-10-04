@@ -39,7 +39,7 @@ try {
         if(-not $LocalOnly){try{
             $m=Get-RemoteJson 'https://registry.npmjs.org/pnpm/latest'
             $null=Stable-Version $m.version
-            if($m.name -ne 'pnpm' -or $m.dist.integrity -notmatch '^sha512-[A-Za-z0-9+/=]+$'){throw 'pnpm metadata geçersiz.'}
+            if($m.name -ne 'pnpm' -or $m.dist.integrity -cnotmatch '^sha512-[A-Za-z0-9+/=]+$'){throw 'pnpm metadata geçersiz.'}
             $target=[pscustomobject]@{version=$m.version;url=$m.dist.tarball;integrity=$m.dist.integrity;engine=$m.engines.node;source='npm';node=$NodeYolu}
             if(-not $NodeYolu){$why='Node.js gerekli; önce Node.js kurulup yeniden taranmalı.'}
         }catch{$why=Hide-Secrets $_.Exception.Message}}

@@ -27,10 +27,10 @@ function PbiLocal {
             if($match.Count -eq 1 -and (-not $chosen -or [version]$match[0].version -ge [version]$chosen.version)){$chosen=$match[0]}
         }catch{}
     }
-    $home=if($env:CODEX_HOME){$env:CODEX_HOME}else{Join-Path $env:USERPROFILE '.codex'}
+    $codexHome=if($env:CODEX_HOME){$env:CODEX_HOME}else{Join-Path $env:USERPROFILE '.codex'}
     $cc=if($env:CLAUDE_CONFIG_DIR){Join-Path $env:CLAUDE_CONFIG_DIR '.claude.json'}else{Join-Path $env:USERPROFILE '.claude.json'}
     $configs=[ordered]@{}
-    foreach($f in @((Join-Path $home 'config.toml'),(Join-Path $env:APPDATA 'Claude\claude_desktop_config.json'),$cc)){
+    foreach($f in @((Join-Path $codexHome 'config.toml'),(Join-Path $env:APPDATA 'Claude\claude_desktop_config.json'),$cc)){
         $configs[$f]=if(Test-Path -LiteralPath $f){File-Sha256 $f}else{$null}
     }
     return [pscustomobject]@{version=(Read-Field $chosen 'version');path=(Read-Field $chosen 'path');installations=$found;config_hashes=$configs}

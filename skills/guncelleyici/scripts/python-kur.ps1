@@ -31,12 +31,12 @@ function Find-SupportedPython {
     return [pscustomobject]@{chosen=$(if($chosen.Count){$chosen[0]}else{$null});other=$other}
 }
 function Python-Target {
-    $list = @(Get-RemoteJson 'https://www.python.org/api/v2/downloads/release/?is_published=true&pre_release=false')
+    $list = Get-RemoteJson 'https://www.python.org/api/v2/downloads/release/?is_published=true&pre_release=false'
     $candidate = @($list | Where-Object { $_.name -match '^Python 3\.14\.\d+$' } | Sort-Object { [version]($_.name -replace '^Python ','') } -Descending | Select-Object -First 1)
     if (-not $candidate.Count) { throw 'Desteklenen Python serisinin kararlı yayını doğrulanamadı.' }
     $v = $candidate[0].name -replace '^Python ',''
     $rid = ($candidate[0].resource_uri.TrimEnd('/') -split '/')[-1]
-    $files = @(Get-RemoteJson "https://www.python.org/api/v2/downloads/release_file/?release=$rid")
+    $files = Get-RemoteJson "https://www.python.org/api/v2/downloads/release_file/?release=$rid"
     $file = @($files | Where-Object { $_.url -eq "https://www.python.org/ftp/python/$v/python-$v-amd64.exe" } | Select-Object -First 1)
     if (-not $file.Count -or $file[0].sha256_sum -notmatch '^[a-fA-F0-9]{64}$') { throw 'Python kurucu özeti doğrulanamadı.' }
     return [pscustomobject]@{version=$v;url=$file[0].url;sha256=$file[0].sha256_sum.ToLower();size=[long]$file[0].filesize;source='python.org';architecture='amd64'}
@@ -69,7 +69,7 @@ try {
         $sig = Get-AuthenticodeSignature -LiteralPath $exe
         if ($sig.Status -ne 'Valid' -or $sig.SignerCertificate.Subject -notlike '*Python Software Foundation*') { throw 'Python yayıncı imzası doğrulanamadı.' }
         $script:MutationStarted=$true
-        $run = Invoke-Native $exe @('/quiet','InstallAllUsers=0','PrependPath=1','Include_launcher=1','InstallLauncherAllUsers=0','Include_test=0','Include_doc=0') 900
+        $run = Invoke-Native $exe @('/quiet','InstallAllUsers=0','PrependPath=1','Include_launcher=1','InstallLauncherAllUsers=0','Include_test=0','Include_doc=0') 1200
         $after = (Find-SupportedPython).chosen
         if ($run.ExitCode -notin @(0,3010) -or -not $after -or $after.version -ne $v) { throw 'Python kurulum sonucu hedefle doğrulanamadı; yeniden kurmayı denemeden önce yerel durumu inceleyin.' }
         $pip = Invoke-Native $after.path @('-I','-B','-m','pip','--version') 30

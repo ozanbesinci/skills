@@ -1,3 +1,26 @@
+# Güncelleyici2.2.1 — Windows kabul ve paket durumu
+
+4 Ekim2026 normal test hesabında gerçek Windows PowerShell5.1 x64. Native kaynak294cae9f831bcdade53fc1f87c446fb73a794fcbee02faab70e1db1926172deb;2.2.1 yayın metadata/dokümantasyonudur, scripts/tests/config byte'ları aynıdır.
+
+| Kontrol | Sonuç |
+|---|---|
+| Native parser ve fixture | PASS:42Windows+29scan |
+| Guest Python suite |108PASS;2NOT_RUN (Linux vakası, symlink yetkisi) |
+| Gerçek Python3.14.8/Node24.21.0/DuckDB1.5.6/PBI1.0.0 server | PASS |
+| Test MCP config koruma | PASS; gerçek istemciler NOT_RUN |
+| Sabit12 kütüphane / pip-check /13 import-işlev kontrolü | PASS |
+| Excel COM | FAIL: Sandbox'ta Excel yok; kütüphane healthFAIL |
+| pnpm12.9.1 | FAIL: launcher ek binary download ister; mevcut koruma engeller |
+| Teklif scan / kurulum | BLOCKED: TLS zinciri; kurulum NOT_RUN |
+| Yeni apply engeli ve journal koruma | PASS |
+| Genel Windows kabulü / üretim onayı | BLOCKED / false |
+
+Kapsam/kimlik:[WINDOWS_KABUL_2026-10-04.json](WINDOWS_KABUL_2026-10-04.json). Paket testleri native kabul yerine geçmez. Aşağıdaki Pro raporu/tests-python.json tarihsel kayıttır.
+
+---
+
+## Tarihsel Pro raporu
+
 # Güncelleyici — Pro denetimi uygulama ve doğrulama raporu
 
 **Tarih:** 3 Ekim 2026  

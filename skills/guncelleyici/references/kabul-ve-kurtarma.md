@@ -12,7 +12,7 @@ canlı kullanıcı ayarı değiştirmez. `pypdf` zaten kuruluysa PDF fixture oku
 
 ```powershell
 & "<Python>" -B -m unittest discover -s "<SKILL>\tests" -p "test_*.py" -v
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<SKILL>\tests\test_windows.ps1"
+powershell.exe -NoProfile -File "<SKILL>\tests\test_windows.ps1"
 ```
 
 İkinci komut bütün PowerShell dosyalarını gerçek PowerShell parser'ıyla denetler,

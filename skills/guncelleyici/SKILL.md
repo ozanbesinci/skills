@@ -17,6 +17,8 @@ Yerel Windows PowerShell 5.1 ve gerçek kullanıcı dosya sistemi olmadan kurulu
 başlatma. Bulut/Linux oturumunu kullanıcının bilgisayarı gibi gösterme. Bu durumda
 paketi/sonucu ver; yerel kurulum yapılmadığını belirt. Yönetici yükseltmesi, güvenlik
 politikası atlatma, imzasız eklenti veya kullanım sözleşmesi kabulü yapma.
+Komutlar mevcut Windows çalıştırma politikasını devralır. Politika yürütmeyi
+engelliyorsa BLOCKED bildir; otomatik Bypass veya politika değişikliği uygulama.
 
 ## Tek giriş: sohbet tablosu
 
@@ -35,7 +37,7 @@ geçici plan ve doğrulanacak paket önbelleği oluşturabilir.
 Work/Codex'in yerel aracında çalıştırılacak iç komut:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<SKILL>\scripts\sohbet.ps1" -Action scan
+powershell.exe -NoProfile -File "<SKILL>\scripts\sohbet.ps1" -Action scan
 ```
 
 Son `@@SONUC` JSON'unu oku. `rows` ve `global_effects` verisini **Seçim / Bileşen / Yüklü / Hedef /
@@ -68,7 +70,7 @@ programlarını otomatik kapatma. Çalışan Python/Node iş yükü bulunursa ku
 Work/Codex'in yerel aracında, yalnız açık uygulama onayından sonra çalıştırılacak iç komut:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<SKILL>\scripts\sohbet.ps1" -Action apply -PlanFile "<scan plan_file>" -Fingerprint "<scan fingerprint>" -Keys "node,pnpm" -MaintenanceWindow -ConfirmApply
+powershell.exe -NoProfile -File "<SKILL>\scripts\sohbet.ps1" -Action apply -PlanFile "<scan plan_file>" -Fingerprint "<scan fingerprint>" -Keys "node,pnpm" -MaintenanceWindow -ConfirmApply
 ```
 
 `-Keys` sadece kullanıcının onayladığı seçimi içerir. `-ConfirmApply` yalnız kullanıcının açık **Güncelle / bu seçimleri uygula** yanıtından sonra verilir; yalnız seçim düzenleme yanıtında bu bayrağı verme ve `apply` çağırma. `-MaintenanceWindow` yalnız
@@ -100,7 +102,7 @@ dosyası ve kendisine ait süreç başlatacağını belirt; bunlar kullanıcı v
 Work/Codex'in yerel aracında çalıştırılacak iç doğrulama komutu:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<SKILL>\scripts\sohbet.ps1" -Action verify -Keys "libraries,duckdb"
+powershell.exe -NoProfile -File "<SKILL>\scripts\sohbet.ps1" -Action verify -Keys "libraries,duckdb"
 ```
 
 Aynı sürümde yeniden kurma/onarım gerektiğinde `scan -RepairKeys "libraries,duckdb"`

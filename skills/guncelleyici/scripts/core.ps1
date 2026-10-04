@@ -14,7 +14,7 @@ $script:Python=$null;$script:Node=$null
 $script:StateRoot=Join-Path $env:LOCALAPPDATA 'guncelleyici'
 $script:Names=[ordered]@{python='Python';libraries='Python kütüphaneleri (12)';node='Node.js LTS';pnpm='pnpm';duckdb='DuckDB';powerbi='Power BI Modeling MCP';offer='teklif-degerlendirme';pdf='DuckDB PDF eklentisi (isteğe bağlı)'}
 function Invoke-PS([string]$Name,[string[]]$Extra,[int]$Timeout=1800){
-    return Invoke-Json "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" (@('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot $Name))+$Extra) $Timeout
+    return Invoke-Json "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" (@('-NoProfile','-File',(Join-Path $PSScriptRoot $Name))+$Extra) $Timeout
 }
 function Get-Identity {
     return [ordered]@{computer=$env:COMPUTERNAME;sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value;skill_root=[IO.Path]::GetFullPath($script:Skill)}
@@ -100,7 +100,8 @@ function Get-DisplayVersion([string]$Key,$Observation){
 }
 function Get-LibraryEffects($Before,$Target,[bool]$Repair){
     $effects=@();$locals=Read-Field $Before 'packages'
-    foreach($pkg in @(Read-Field $Target 'packages' @())){
+    $packages=Read-Field $Target 'packages' @()
+    foreach($pkg in $packages){
         $row=Read-Field $locals ([string]$pkg.name);$from=[string](Read-Field $row 'version');$to=[string]$pkg.version
         if(-not $from){$action='install'}elseif($from -ceq $to){if($Repair){$action='reinstall'}else{continue}}else{
             $action='change';try{if([version]$from -gt [version]$to){$action='downgrade'}elseif([version]$from -lt [version]$to){$action='upgrade'}}catch{}

@@ -60,6 +60,7 @@ class PackageTests(unittest.TestCase):
         with patch.object(libs,'ensure_runtime'),patch.object(libs,'run',return_value=proc):
             result=libs.install(libs.target_info())
         self.assertEqual(result['ozet'],'ENGEL');self.assertTrue(result['recovery_required'])
+    @unittest.skipUnless(importlib.util.find_spec("pypdf") is not None, "optional pypdf dependency is not installed")
     def test_pdf_fixture_is_readable(self):
         from pypdf import PdfReader
         with tempfile.TemporaryDirectory() as td:

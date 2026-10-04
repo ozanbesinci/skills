@@ -79,7 +79,7 @@ yürütme aracı** aşağıdaki iç bakım adımını çalıştırır. Son kulla
 terminal açması istenmez.
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<SKILL>\scripts\powerbi-mcp-kur.ps1" -BindOnly -ExePath "<doğrulanmış sunucunun tam exe yolu>" -PythonYolu "<Python 3.14 tam yolu>"
+powershell.exe -NoProfile -File "<SKILL>\scripts\powerbi-mcp-kur.ps1" -BindOnly -ExePath "<doğrulanmış sunucunun tam exe yolu>" -PythonYolu "<Python 3.14 tam yolu>"
 ```
 
 Bu iç adım sunucunun imzasını/çalışmasını yeniden sınar, ortak güncelleme kilidini

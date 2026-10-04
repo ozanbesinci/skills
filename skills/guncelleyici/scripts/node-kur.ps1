@@ -22,7 +22,7 @@ function Find-Node {
     return $fallback
 }
 function NodeTarget {
-    $releases=@(Get-RemoteJson 'https://nodejs.org/dist/index.json')
+    $releases=Get-RemoteJson 'https://nodejs.org/dist/index.json'
     $lts=@($releases | Where-Object { $_.lts -and @($_.files) -contains 'win-x64-zip' } | Sort-Object {[version]($_.version -replace '^v','')} -Descending | Select-Object -First 1)
     if (-not $lts.Count) { throw 'Node.js LTS hedefi doğrulanamadı.' }
     $v=$lts[0].version -replace '^v',''; $null=Stable-Version $v

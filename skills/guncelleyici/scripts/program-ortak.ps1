@@ -99,7 +99,7 @@ function Write-AtomicJson([string]$Path, $Value) {
         $data = [Text.Encoding]::UTF8.GetBytes(($Value | ConvertTo-Json -Depth 30))
         $s = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
         try { $s.Write($data,0,$data.Length); $s.Flush($true) } finally { $s.Dispose() }
-        if ([IO.File]::Exists($Path)) { [IO.File]::Replace($temp,$Path,$null) } else { [IO.File]::Move($temp,$Path) }
+        if ([IO.File]::Exists($Path)) { [IO.File]::Replace($temp,$Path,[System.Management.Automation.Language.NullString]::Value) } else { [IO.File]::Move($temp,$Path) }
     } finally { if ([IO.File]::Exists($temp)) { [IO.File]::Delete($temp) } }
 }
 function Assert-TrustedUri([string]$Uri) {

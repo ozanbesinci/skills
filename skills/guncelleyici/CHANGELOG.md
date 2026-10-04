@@ -4,6 +4,16 @@ Sürümleme: büyük sürüm akış değişikliklerini, küçük sürüm yeni a�
 kontrolleri, yama sürümü düzeltmeleri belirtir. Yayımlanmamış değişiklikler
 yerel geliştirme durumundadır.
 
+## v2.2.1 — 2026-10-04 — Windows düzeltmeleri ve plugin paketi
+
+- Gerçek PowerShell5.1 atomik JSON yazımında null yedek yolu düzeltildi; otomatik Bypass kaldırıldı.
+- Python/Node release dizilerinin JSON açılması, sabit kütüphane setinin korunması, Power BI home değişkeni ve tr-TR pnpm sürüm karşılaştırması düzeltildi.
+- Python kurucusu sınırlı bekleme900→1200 saniye; yalnız kendi süreç ağacı ve kalıcı kurtarma mekanizmaları korundu.
+- pypdf yoksa isteğe bağlı PDF fixture NOT_RUN; bozuk fixture FAIL kalır.29 yeni scan regresyon kontrolü eklendi.
+- Native normal kullanıcı PS5.1 x64: Python/Node/DuckDB/PBI server gerçek kurulum ve ayrı verify PASS;108 Python PASS/2 NOT_RUN,42Windows+29scan PASS.
+- pnpm staging FAIL, teklif TLS BLOCKED, Excel yokluğu FAIL ve gerçek istemci/kalan matris NOT_RUN açık tutulur. Kurtarma kapısı PASS; production_approved=false.
+- Kaynak2.2.1 ve Kılıç Satınalma plugin1.1.4 ZIP/SHA-256/manifest hazırlanır. Yayın ve canlı kurulum ayrı yetkilerdir.
+
 ## v2.2.0 — 2026-10-04 — Pro denetimi, Work/Codex sohbet yüzeyi ve kontrollü PDF
 
 - GitHub Release `v2.2.0`, doğrulanmış `skill.zip` ve `skill.zip.sha256` varlıklarıyla yayımlandı; bu işlem `production_approved=false` durumunu değiştirmez ve native Windows kabulü yerine geçmez.
