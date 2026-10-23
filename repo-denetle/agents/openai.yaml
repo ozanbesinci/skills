@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Denetle"
+  short_description: "GitHub deposu icin cok ajanli, kanitli besli denetim"
+  default_prompt: "repo-denetle ile verilen GitHub adresini tek commit uzerinde incele; dort bagimsiz rapor ve besinci butunlesik yol haritasini uret."

@@ -1,0 +1,33 @@
+# Repo Denetle - 1.1.2 (kararlı)
+
+Kararlı kabul kapsamı: Windows / Claude Code tam akış. Codex keşif ve izinli GitHub kaynak alımı geçti; Codex ve Antigravity tam denetim kabulü açık.
+
+GitHub deposunu (ya da yerel bir Git kopyasını) tek bir commit'e sabitleyip çok ajanlı,
+kanıta dayalı statik denetim yapar. Dört bağımsız rapor (BIZ, ARCH, REL, QA), bulgu doğrulama
+(VERIFY) ve beşinci bütünleşik yaşam döngüsü raporu (LIFE) + yol haritası üretir. Raporlar
+Türkçedir. Claude Code, Codex ve Antigravity'de aynı klasörden çalışır.
+
+## Kurulum
+Python 3.10+ ve Git gerekir. Windows: `KUR-WINDOWS.cmd`. Diğerleri:
+`python3 scripts/kur.py --target all`. Kopya yapılmaz: Claude Code ve Codex skill klasörüne
+junction/symlink açılır; Antigravity junction izlemediği için `~/.gemini/config/skills.json`
+içine bu klasörü gösteren bir kayıt eklenir. Yolda başka bir şey varsa `~/.repo-denetle-yedek/`
+altına taşınır. Önizleme `--dry-run`, kaldırma `--uninstall`. Kurulumdan sonra yeni oturum açın.
+
+## Kullanım
+- Claude Code: `/repo-denetle https://github.com/kullanici/proje`
+- Codex: `$repo-denetle https://github.com/kullanici/proje`
+- Antigravity: "repo-denetle ile şu depoyu denetle: https://github.com/kullanici/proje"
+  (uygulama/IDE ya da etkileşimli `agy`; başsız `agy -p` komut izni soramaz)
+- Özel depo / ağ yok: yerel kopyayla `--local-git YOL --repo sahip/ad`.
+- Profil: `--profile guvence` (varsayılan) | `dengeli` | `derin`.
+
+Çalışma klasörü varsayılanı `~/repo-denetle-calisma/<repo>-<zaman>`; `REPO_DENETLE_ROOT`
+ortam değişkeniyle değişir. Sonuç: o klasörde `repo-denetle-raporlar.zip`.
+
+## Sınırlar
+Statik denetimdir: hedef deponun kodu, testi, kurulumu, CI'ı çalıştırılmaz; PR açılmaz.
+Kontroller dosya/hash/satır/alıntı ve aşama sırasını denetler, raporun anlamca doğruluğunu
+kanıtlamaz. Gerçek alt ajan yoksa sıralı kip raporda açıkça yazılır. Model ve efor seçimi
+uygulamaya bağlıdır. Raporlar gizli bilgi içerebilir; dışarı otomatik gönderilmez.
+Hangi uygulamada neyin canlı doğrulandığı `TEST-RESULTS.md` içindedir.
