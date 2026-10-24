@@ -1,0 +1,35 @@
+{
+  "version": "1.3.0",
+  "scope": "PST/mail aktarımı ve mail-ara indeks teslimi",
+  "source_tests": {
+    "count": 87,
+    "passed": 87,
+    "failures": 0,
+    "errors": 0,
+    "python": "3.14",
+    "platform": "Windows"
+  },
+  "installed_codex_tests": {
+    "count": 87,
+    "passed": 87,
+    "failures": 0,
+    "errors": 0
+  },
+  "skill_creator_quick_validate": {
+    "kurumsal-mail-cek": "valid",
+    "mail-ara": "valid"
+  },
+  "ast_python_files": 22,
+  "production_data_used": false,
+  "live_providers_used": false,
+  "unchanged_support_sources": [
+    "mail-ara/scripts/ara.py",
+    "mail-ara/scripts/degerlendir.py",
+    "mail-ara/scripts/v2_gecis.py"
+  ],
+  "caveats": [
+    "Gerçek Outlook/Graph/ONNX/Chroma çalışma zamanı üretim kabulü yapılmadı.",
+    "Gerçek mail arama ölçümü ve büyük veri performansı bu sürüm kabulünün dışında.",
+    "ZIP sonrası kabul, Release notunda ve yerel yayın kaydında raporlanır."
+  ]
+}
