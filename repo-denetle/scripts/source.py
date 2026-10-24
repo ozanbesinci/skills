@@ -37,14 +37,15 @@ def parse_url(url: str) -> dict:
 
 def run_git(args: list[str], gitdir: Path|None=None, stdin: bytes|None=None) -> bytes:
     env=os.environ.copy()
-    env.update(GIT_CONFIG_NOSYSTEM='1',GIT_CONFIG_GLOBAL=os.devnull,GIT_TERMINAL_PROMPT='0',GIT_LFS_SKIP_SMUDGE='1')
+    env.update(GIT_CONFIG_NOSYSTEM='1',GIT_CONFIG_GLOBAL=os.devnull,GIT_TERMINAL_PROMPT='0',GIT_LFS_SKIP_SMUDGE='1',
+               GIT_NO_LAZY_FETCH='1')
     # Do not inherit environment-injected Git configuration, repo paths, alternate object stores or hooks.
     for k in list(env):
         if k in ('GIT_DIR','GIT_WORK_TREE','GIT_INDEX_FILE','GIT_ALTERNATE_OBJECT_DIRECTORIES','GIT_OBJECT_DIRECTORY') or k.startswith('GIT_CONFIG_KEY_') or k.startswith('GIT_CONFIG_VALUE_') or k in ('GIT_CONFIG_COUNT','GIT_CONFIG_PARAMETERS'):
             env.pop(k,None)
     # safe.directory: the global config is ignored above, so a --local-git repo created by another
     # account (e.g. a sandbox user) would otherwise fail as "dubious ownership". Only plumbing reads run.
-    cmd=['git','-c','core.hooksPath='+os.devnull,'-c','core.fsmonitor=false','-c','safe.directory=*',
+    cmd=['git','--no-replace-objects','-c','core.hooksPath='+os.devnull,'-c','core.fsmonitor=false','-c','safe.directory=*',
          '-c','protocol.file.allow=never','-c','protocol.ext.allow=never','-c','protocol.ssh.allow=never',
          '-c','credential.helper=','-c','fetch.recurseSubmodules=false']
     if gitdir: cmd+=['--git-dir='+str(gitdir)]
@@ -155,7 +156,6 @@ def snapshot(root: Path,repo: str,sha: str,scope: str,gitdir: Path,profile: str,
             skipped.append(rawpath.decode('utf-8','replace')); continue
         full.append({'path':path,'mode':permissions,'object_type':objtype,'blob_sha':blob,
                      'size':0 if size=='-' else int(size)})
-    if len(full)>MAX_FILES: raise AuditError('File limit exceeded; narrow scope or partition explicitly')
     if scope and not any(i['path']==scope or i['path'].startswith(scope+'/') for i in full):
         raise AuditError('Requested path not present at pinned commit')
     planned=[]; total=0
@@ -169,6 +169,7 @@ def snapshot(root: Path,repo: str,sha: str,scope: str,gitdir: Path,profile: str,
         elif row['size']>MAX_FILE or total+row['size']>MAX_TOTAL: entry['limitation']='Content excluded by explicit byte budget'
         else: fetch=True; total+=row['size']
         planned.append((entry,fetch))
+    if len(planned)>MAX_FILES: raise AuditError('File limit exceeded; narrow scope or partition explicitly')
     contents=read_blobs(gitdir,[e['blob_sha'] for e,f in planned if f])
     entries=[add_bytes(root,e,contents[e['blob_sha']] if f else None) for e,f in planned]
     atomic_json(root/'full-tree.json',full)

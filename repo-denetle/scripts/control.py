@@ -25,6 +25,8 @@ AUDITS = ('BIZ','ARCH','REL','QA')
 SHA_RE = re.compile(r'^[0-9a-f]{40}$')
 MAX_ATTEMPTS = 2
 MAX_REOPENS = 3
+REVIEW_CHECKS = ('applicability','measurements','verification_preserved','synthesis')
+VERDICTS = ('confirmed','disputed','unverified','rejected')
 class AuditError(ValueError):
     pass
 
@@ -323,6 +325,17 @@ def reopen(root: Path,stage: str,reason: str) -> dict:
     state,_,_=load(root)
     if stage not in DEPS or not reason.strip(): raise AuditError('Valid stage and reason required')
     if state.get('reopens',0)>=MAX_REOPENS: raise AuditError('Reopen budget exhausted; start a new run and record why')
+    # Preserve earlier delivery as history; it must no longer look like the active result.
+    previous=[within(root,name) for name in ('completion.json','repo-denetle-raporlar.zip','review.json')
+              if within(root,name).exists()]
+    historical=[]
+    if previous:
+        history=within(root,'superseded'); history.mkdir(exist_ok=True)
+        folder=Path(tempfile.mkdtemp(prefix='delivery-',dir=history))
+        for path in previous:
+            destination=folder/path.name
+            os.replace(path,destination)
+            historical.append(destination.relative_to(root).as_posix())
     affected={stage}
     while True:
         expanded=affected|{s for s,deps in DEPS.items() if set(deps)&affected}
@@ -333,11 +346,17 @@ def reopen(root: Path,stage: str,reason: str) -> dict:
         info=state['stages'][s]
         info.update(status='pending',artifacts={},attempts=0); info.pop('last_error',None)
     state['reopens']=state.get('reopens',0)+1
-    state['events'].append({'at':now(),'event':'reopened','stage':stage,'reason':reason,'invalidated':sorted(affected)})
+    state['events'].append({'at':now(),'event':'reopened','stage':stage,'reason':reason,'invalidated':sorted(affected),
+                            'superseded_delivery':historical})
     atomic_json(root/'state.json',state)
     return {'invalidated':sorted(affected),'reopens_left':MAX_REOPENS-state['reopens']}
 
+def require_open_delivery(root: Path) -> None:
+    if any(within(root,name).exists() for name in ('completion.json','repo-denetle-raporlar.zip')):
+        raise AuditError('Delivery already exists; reopen the affected stage before changing execution records')
+
 def dispatch(root: Path,role: str,requested_model: str='',requested_effort: str='') -> dict:
+    require_open_delivery(root)
     state,manifest,_=load(root)
     if role not in ROLES: raise AuditError('Unknown role')
     if len(state['dispatches'])>=state['dispatch_limit']: raise AuditError('Dispatch budget exhausted')
@@ -348,6 +367,7 @@ def dispatch(root: Path,role: str,requested_model: str='',requested_effort: str=
 
 def telemetry(root: Path,dispatch_id: str,model: str='',effort: str='',agent_id: str='',tokens: int|None=None) -> dict:
     """Record values the HOST reported for a dispatch. Never fill these from the requested settings."""
+    require_open_delivery(root)
     state,_,_=load(root)
     row=next((d for d in state['dispatches'] if d['id']==dispatch_id),None)
     if row is None: raise AuditError('Unknown dispatch ID')
@@ -359,24 +379,138 @@ def telemetry(root: Path,dispatch_id: str,model: str='',effort: str='',agent_id:
         row['tokens']=tokens
     atomic_json(root/'state.json',state); return row
 
+def review_template(root: Path) -> dict:
+    """Unapproved form only. A real reader must assess the final LIFE and synthesis output."""
+    state,manifest,_=load(root); verify_artifacts(root,state)
+    if any(i['status']!='accepted' for i in state['stages'].values()):
+        raise AuditError('All stages must be accepted before final review')
+    artifacts={p:h for info in state['stages'].values() for p,h in info['artifacts'].items()}
+    return {'schema':1,'commit':manifest['commit'],'state_sha256':digest((root/'state.json').read_bytes()),
+            'artifacts':artifacts,'status':'needs_revision',
+            'reviewer':{'kind':'coordinator','name':'','agent_id':None},
+            'checks':{k:{'status':'needs_revision','reason':'','evidence':[]} for k in REVIEW_CHECKS},
+            'findings':[{'finding_id':fid,'status':'unverified','reason':'','evidence':[]}
+                        for fid in sorted(audit_ids(root,(*AUDITS,'LIFE')))],
+            'claims':[],'limitations':[]}
+
+def validate_review(root: Path) -> dict:
+    expected=review_template(root)
+    review=read_json(within(root,'review.json'))
+    if not isinstance(review,dict) or review.get('schema')!=1 or review.get('commit')!=expected['commit']:
+        raise AuditError('Final review schema/commit mismatch')
+    if review.get('state_sha256')!=expected['state_sha256'] or review.get('artifacts')!=expected['artifacts']:
+        raise AuditError('Final review is stale; re-read changed outputs and review again')
+    if review.get('status')!='approved': raise AuditError('Final content review requires revision')
+    reviewer=review.get('reviewer',{})
+    if not isinstance(reviewer,dict) or reviewer.get('kind') not in ('coordinator','independent') or not str(reviewer.get('name') or '').strip():
+        raise AuditError('Final reviewer identity required')
+    if reviewer['kind']=='independent' and not reviewer.get('agent_id'):
+        raise AuditError('Independent reviewer needs a real host agent ID')
+    _,_,inventory=load(root); idx={i['path']:i for i in inventory}
+    checks=review.get('checks')
+    if not isinstance(checks,dict) or set(checks)!=set(REVIEW_CHECKS):
+        raise AuditError('Final review must cover applicability, measurements, verdicts and synthesis')
+    for key,row in checks.items():
+        if not isinstance(row,dict) or row.get('status')!='passed' or not str(row.get('reason') or '').strip():
+            raise AuditError('Final review check needs revision: '+key)
+        for ev in row.get('evidence',[]): evidence(root,ev,idx)
+    rows=review.get('findings')
+    if not isinstance(rows,list) or any(not isinstance(r,dict) for r in rows):
+        raise AuditError('Final review findings must be an array of objects')
+    ids=[r.get('finding_id') for r in rows]
+    if len(ids)!=len(set(ids)) or set(ids)!={r['finding_id'] for r in expected['findings']}:
+        raise AuditError('Final review must classify every original and LIFE finding exactly once')
+    earlier={r['finding_id']:r['status'] for r in read_json(within(root,'findings/VERIFY.json'))['verification']}
+    verdicts={}
+    for row in rows:
+        fid=row['finding_id']; status=row.get('status')
+        if status not in VERDICTS or not str(row.get('reason') or '').strip():
+            raise AuditError('Invalid final review verdict: '+fid)
+        if status=='confirmed' and earlier.get(fid,'confirmed')!='confirmed':
+            raise AuditError('Reopen VERIFY before promoting its disputed/unverified/rejected finding: '+fid)
+        if status!='unverified' and not row.get('evidence'):
+            raise AuditError('Final review verdict requires source evidence: '+fid)
+        for ev in row.get('evidence',[]): evidence(root,ev,idx)
+        verdicts[fid]=status
+    claims=review.get('claims')
+    if not isinstance(claims,list) or not isinstance(review.get('limitations'),list):
+        raise AuditError('Final review claims and limitations must be arrays')
+    seen=set()
+    for claim in claims:
+        if not isinstance(claim,dict): raise AuditError('Synthesis claim must be an object')
+        cid=claim.get('id',''); path=claim.get('path')
+        if not re.fullmatch(r'CLM-[0-9]{3,}',cid) or cid in seen:
+            raise AuditError('Invalid/duplicate synthesis claim ID')
+        seen.add(cid)
+        if path not in ('reports/LIFE.md','executive-summary.md','roadmap.md'):
+            raise AuditError('Invalid synthesis claim path')
+        quote=claim.get('quote'); text=read_text(within(root,path))
+        if not isinstance(quote,str) or not normalize(quote) or normalize(quote) not in normalize(text):
+            raise AuditError('Synthesis claim quote does not match reviewed output')
+        sources=claim.get('source_ids'); status=claim.get('status')
+        if not isinstance(sources,list) or not sources or not set(sources)<=set(verdicts) or status not in VERDICTS:
+            raise AuditError('Invalid synthesis source/status mapping')
+        if status=='confirmed' and any(verdicts[fid]!='confirmed' for fid in sources):
+            raise AuditError('Synthesis promotes an unconfirmed finding')
+    return {'status':'review_record_validated','reviewer':reviewer,'structural_only':True,
+            'review_sha256':digest(within(root,'review.json').read_bytes())}
+
+def publish_delivery(root: Path,temporary: str,result: dict) -> None:
+    """Publish the ZIP/marker pair, restoring both previous files on an ordinary I/O error."""
+    targets=(within(root,'repo-denetle-raporlar.zip'),within(root,'completion.json'))
+    rollback=Path(tempfile.mkdtemp(prefix='.delivery-',dir=root))
+    moved={}; publishing=False; clean=False
+    try:
+        for path in targets:
+            if path.exists():
+                saved=rollback/path.name; os.replace(path,saved); moved[path]=saved
+        publishing=True
+        os.replace(temporary,targets[0])
+        atomic_json(targets[1],result)
+        clean=True
+    except OSError:
+        if publishing:
+            for path in targets:
+                if path.exists(): path.unlink()
+        for path,saved in moved.items(): os.replace(saved,path)
+        clean=True
+        raise
+    finally:
+        # If rollback itself fails, retain its files for recovery instead of hiding the loss.
+        if clean:
+            for saved in moved.values():
+                if saved.exists(): saved.unlink()
+            rollback.rmdir()
+
 def finalize(root: Path) -> dict:
     state,manifest,inventory=load(root); verify_artifacts(root,state)
     pending=[s for s,i in state['stages'].items() if i['status']!='accepted']
     if pending: raise AuditError('Incomplete stages: '+', '.join(pending))
     # Recheck citations against source bytes, not just report hashes.
     for s in DEPS: validate_stage(root,s,manifest,inventory,write=False)
+    review=validate_review(root)
     result={'commit':manifest['commit'],'mode':manifest['mode'],
             'scope':manifest['scope'],'status':'STRUCTURALLY_VALIDATED_STATIC_AUDIT',
             'coverage':read_json(root/'coverage.json'),
+            'state_sha256':digest((root/'state.json').read_bytes()),
+            'review_sha256':review['review_sha256'],
             'warning':'Structural checks do not prove semantic accuracy, independence, or production readiness.'}
-    atomic_json(root/'completion.json',result)
     files={'manifest.json','inventory.json','coverage.json','context.md','state.json',
-           'completion.json','executive-summary.md','roadmap.md'}
+           'completion.json','executive-summary.md','roadmap.md','review.json'}
     for info in state['stages'].values(): files.update(info['artifacts'])
-    dest=root/'repo-denetle-raporlar.zip'
-    with zipfile.ZipFile(dest,'w',zipfile.ZIP_DEFLATED) as z:
-        for rel in sorted(files):
-            data=within(root,rel).read_bytes(); z.writestr(rel,data)
+    dest=within(root,'repo-denetle-raporlar.zip')
+    fd,tmp=tempfile.mkstemp(prefix='.report-',suffix='.zip',dir=root)
+    try:
+        with os.fdopen(fd,'w+b') as fh:
+            with zipfile.ZipFile(fh,'w',zipfile.ZIP_DEFLATED) as z:
+                for rel in sorted(files):
+                    data=((json.dumps(result,ensure_ascii=False,indent=2)+'\n').encode('utf-8')
+                          if rel=='completion.json' else within(root,rel).read_bytes())
+                    z.writestr(rel,data)
+            fh.flush(); os.fsync(fh.fileno())
+        publish_delivery(root,tmp,result)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
     return {**result,'archive':str(dest),'archive_sha256':digest(dest.read_bytes())}
 
 def read_range(root: Path,path: str,start: int,end: int) -> str:
@@ -398,7 +532,7 @@ def listing(root: Path,prefix: str='') -> str:
 def main() -> int:
     utf8_stdio()
     p=argparse.ArgumentParser(description=__doc__); sub=p.add_subparsers(dest='command',required=True)
-    for cmd in ('status','finalize'):
+    for cmd in ('status','finalize','review-template','review-check'):
         q=sub.add_parser(cmd); q.add_argument('workspace',type=Path)
     q=sub.add_parser('list'); q.add_argument('workspace',type=Path); q.add_argument('--prefix',default='')
     q=sub.add_parser('read'); q.add_argument('workspace',type=Path); q.add_argument('path'); q.add_argument('--start',type=int,default=1); q.add_argument('--end',type=int,default=160)
@@ -424,6 +558,8 @@ def main() -> int:
         elif a.command=='dispatch': result=dispatch(root,a.role,a.model,a.effort)
         elif a.command=='telemetry': result=telemetry(root,a.dispatch_id,a.model,a.effort,a.agent_id,a.tokens)
         elif a.command=='finalize': result=finalize(root)
+        elif a.command=='review-template': result=review_template(root)
+        elif a.command=='review-check': result=validate_review(root)
         else:
             state,manifest,inv=load(root); verify_artifacts(root,state)
             result={'commit':manifest['commit'],'repo':manifest.get('repo'),'mode':manifest['mode'],

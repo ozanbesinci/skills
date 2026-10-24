@@ -106,6 +106,10 @@ Always `check` until it passes, then `accept`. A rejected stage gets one precise
 request; never turn FAIL into PASS without new evidence.
 
 ## 7. Delivery
+After LIFE, read `references/final-review.md` and review the complete final outputs, including
+new LIFE findings, summary claims and roadmap. Save the hash-bound `review.json`; a template
+is NOT approval. `review-check` must pass before `finalize`. This may be the coordinator's
+review; label it honestly and never call it an independent agent review without a real agent.
 `finalize` writes `WORKSPACE/repo-denetle-raporlar.zip` (no source bytes). Reply in Turkish:
 executive summary, links to the five reports, prompts, roadmap, ZIP, and the truthful
 limitations (coverage gaps, sequential mode, unverified telemetry). Do not upload reports
@@ -115,3 +119,4 @@ anywhere.
 `references/protocol.md` state machine, resume, connector import - `report-contract.md`
 evidence and JSON shape - `domains.md` 20 areas - `models.md` model/effort per host -
 `platforms.md` host details and install - `roles/*.md` eight role contracts.
+`final-review.md` required post-LIFE review and synthesis claim mapping.

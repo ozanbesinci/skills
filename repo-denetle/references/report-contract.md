@@ -5,6 +5,10 @@ P0: evidenced critical risk requiring a stop of the affected operation/release.
 P1: high impact; P2: moderate; P3: low-impact improvement. Version drift or missing tests
 are not automatically P0. Label defect, risk, debt, documentation, missing requirement,
 or unverified claim. Explain expected behavior's authority and counterevidence.
+Establish applicability before declaring impact: which component/version is actually used?
+Different version numbers for a main package and an independently versioned updater are not
+automatically drift. Historical code excluded from the current installation is not a proven
+current outage. State a conditional risk if actual use is unknown.
 
 Evidence levels: documentation claim, static implementation, test source, historical run,
 current isolated run, live acceptance, unverified. This package's normal mode is STATIC:
@@ -61,3 +65,6 @@ For LIFE additionally save findings/consolidated.json as an array of
 Every original finding ID, including rejected ones, must appear. Do not erase disagreements.
 No findings is valid, not proof of safety. Parent validates semantic completeness beyond
 script checks; scripts cannot prove an agent read or understood a file.
+After LIFE, `final-review.md` applies to all findings and final synthesis. Preserve rejected,
+disputed and unverified conclusions in prose as well as IDs. New LIFE claims do not inherit
+VERIFY approval. Do not add unsupported numerical cost or token claims to summaries.

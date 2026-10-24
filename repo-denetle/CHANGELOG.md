@@ -1,3 +1,25 @@
+# 1.1.3 - 2026-10-24 (stable)
+- Full independent package review: preserve installer source paths, write ZIPs atomically
+  without following existing hardlinks, retire stale deliveries on reopen, and disable
+  implicit promisor fetch during source reads. Prior deliveries are retained as history.
+- Require a hash-bound final review after LIFE, including every finding, scope/measurement
+  checks, preserved verdicts and synthesis claim mappings. This is not semantic certification.
+- Historical/current applicability and measured/estimated/unknown quantities are explicit
+  in auditor and final-review contracts. See TEST-RESULTS.md for current validation scope.
+- Git replacement refs are disabled for every source-acquisition Git command, so pinned
+  commits and blob contents cannot silently resolve to replacement objects.
+- The file-count limit applies to the selected audit scope, including shared candidates;
+  the full repository tree remains available for discovery.
+- Five regression tests cover commit/blob replacements, narrowed tree/blob scopes,
+  oversized scopes and shared-candidate limits.
+
+- ZIP/completion publication rolls back both on an ordinary I/O error; post-delivery
+  dispatch/telemetry changes require reopening instead of leaving stale success.
+- Windows code suite: 102 tests, 101 passed, 1 symlink-privilege skip. Antigravity
+  1.1.3 eight-stage delivery passed structural checks. Its example report was repaired
+  on Codex, then independently re-read with 64 final claim mappings. The repaired
+  report is a separate release asset; it is not a new Antigravity run.
+
 # 1.1.2 - 2026-10-23 (stable)
 Kararlı kabul kapsamı: Windows / Claude Code tam akış. Codex keşif ve izinli GitHub kaynak alımı geçti; Codex ve Antigravity tam denetim kabulü açık.
 Güncel 81 testlik kayıt ve dosya hash manifesti yenilendi. Çalışma kodu ve rol sözleşmeleri 1.1.1 ile aynıdır.

@@ -1,3 +1,69 @@
+# Validation results - Repo Denetle 1.1.3 (stable)
+
+Date: 2026-10-24. Windows, Python 3.14.8, Git 2.54.0.windows.1.
+Current full suite: **102 tests, 101 passed, 1 skipped, 0 failures** (47.741 seconds).
+Command: `python -X utf8 -B -m unittest discover -s tests -t tests -v`.
+The single skip remains Windows symlink privilege; junction and hardlink tests actually ran.
+
+Independent full-file review covered the original 27-file 1.1.3 candidate and then re-read
+the code/instruction fixes. Requested model/effort: gpt-6-astra/high; independently supplied
+actual model/effort/token telemetry unavailable. Four original defects were reproduced in
+isolated fixtures and fixed: installer self-source relocation, ZIP hardlink overwrite,
+stale delivery after reopen, and implicit promisor fetch. Fix review also caught completion
+publication rollback and post-finalization execution-record mutations; both were fixed.
+
+16 new regression tests cover these changes and the final review record: missing/unapproved
+or stale review, historical applicability/measurement checks, all LIFE IDs, preserving prior
+VERIFY verdicts, claim/source verdict consistency, truthful unverified delivery, write failure
+rollback and preflight installation overlap. The final manifest includes two new files.
+An earlier suite had only a stale-manifest failure after a Windows write-permission error;
+the manifest was refreshed and the final complete run above passed.
+
+Review records remain source-linked reader attestations, not automatic semantic certification.
+Current tests use isolated local fixtures; no audited target code/tests/builds were executed.
+Old eight-role host runs below are historical 1.1.2 evidence. Current 1.1.3 evidence follows.
+
+## Antigravity 1.1.3 and final report review - 2026-10-24
+
+A fresh Antigravity native run completed all eight stages for the pinned historical
+updater scope at d60f202e22b2ac03287da4f0225c9ebbd0b24db0 (10 files / 884 lines).
+The original 31-file ZIP SHA-256 is
+`5daa788e1bf64119b01a61a526aaefd5c74b07cace35c6d9e9f1ca7085792e5c`.
+Stage/hash gates passed, but its final prose had five source/authority/measurement
+problems. Those gates alone were not treated as semantic acceptance.
+
+A copied workspace was repaired on Codex: VERIFY and LIFE were reopened; a real
+independent verifier re-read every source and original full report. The coordinator
+rewrote LIFE, summary and roadmap; a different independent reader reviewed all final
+outputs and 64 claim mappings. All 20 original IDs and 13 groups remain visible.
+Final verdicts: 4 conditional P3 confirmed, 6 disputed, 9 rejected, 1 unverified.
+This is an example audit of the historical target, not a count of defects in this skill.
+The corrected 31-file ZIP SHA-256 is
+`2b9a665cc0d055ba6466090b9e3a21719cb6e128b7735d4e42cf1f5d687f7ea7`.
+CRC and 31/31 raw-byte readback passed; original sources/delivery were preserved.
+The final review binds 26 accepted artifact hashes; its SHA-256 is
+`e3fe4d0cc838c819eed926d7be31ba74dafa1d880767593d6914b65394e7780a`.
+
+Release includes the corrected example report as a separate ZIP and SHA-256 asset.
+Report repair/independent review on Codex is not a new eight-role Antigravity run.
+Actual model/effort/token telemetry was unavailable; requested settings are not
+reported as independently confirmed actual models. macOS/Linux were not tested.
+Static evidence and reader approval are not production/security certification.
+Earlier records below retain their original version and scope.
+
+## Earlier 1.1.3 source-fix verification
+
+Date: 2026-10-24. PR #1 source repair; no release package published.
+Windows, Python 3.12.14, Git for Windows.
+
+Full suite: **86 tests, 85 passed, 1 skipped, 0 failures.**
+Command: `python -m unittest discover -s tests -t tests -v`.
+Five added regression tests cover real Git commit/blob replacement refs, narrowed
+tree/blob scopes, rejection of oversized selected scopes and shared-candidate counts.
+The three regression tests run before the repair reproduced both review findings.
+Limits are reduced in the scope tests to exercise the same boundary with small fixtures.
+This does not establish new full-host audit acceptance. Historical results follow.
+
 # Validation results - Repo Denetle 1.1.2
 
 Date: 2026-10-23
@@ -54,8 +120,9 @@ byte budget), UTF-8 `read` on a pipe and with `--out`, `python -I` CLI, manifest
 - skill-creator quick_validate could not run: optional PyYAML absent. Package frontmatter tests passed.
 
 ## Not verified
-- A complete eight-role audit in Codex or Antigravity (only the Claude Code run above).
+- A fresh complete eight-role audit for 1.1.3 in each host. Later 1.1.2 Codex/Antigravity
+  workflow results are recorded outside this historical subsection; they do not certify semantics.
 - Antigravity network acquisition and Codex acquisition without network approval.
-- Model/effort selection actually honored by each host; token telemetry.
+- Actual model/effort/token telemetry beyond the specific historical values recorded above.
 - Semantic correctness or completeness of audit reports.
 - macOS/Linux installation.

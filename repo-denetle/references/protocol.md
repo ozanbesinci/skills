@@ -28,7 +28,11 @@ reports/sidecars and accepts BIZ, ARCH, REL, QA individually with the same comma
 including a verification entry for every original finding. Accept VERIFY.
 8. Run LIFE. It reads all original full reports + VERIFY and source. Save full lifecycle
 report and findings, findings/consolidated.json, executive-summary.md, roadmap.md. Accept LIFE.
-9. `PY "SKILL_ROOT/scripts/control.py" status WORKSPACE`
+9. Read ALL final outputs after LIFE. Follow `final-review.md`, save review.json with current
+artifact/state hashes, all original + LIFE verdicts, and explicit synthesis claim mappings.
+`PY "SKILL_ROOT/scripts/control.py" review-check WORKSPACE` must pass. A coordinator review
+is allowed and must be labeled coordinator, not independent. A template is not approval.
+10. `PY "SKILL_ROOT/scripts/control.py" status WORKSPACE`
    `PY "SKILL_ROOT/scripts/control.py" finalize WORKSPACE`
    Deliver WORKSPACE/repo-denetle-raporlar.zip and key report links.
 
@@ -44,7 +48,9 @@ Use the same WORKSPACE and manifest SHA; never fetch current main on resume. `st
 checks accepted artifact integrity. Completed artifacts should not be rewritten silently.
 `PY "SKILL_ROOT/scripts/control.py" reopen WORKSPACE STAGE --reason "explanation"`
 invalidates the stage and its descendants, keeps the event history and gives the invalidated
-stages a fresh attempt budget. At most three reopens per run. Each stage permits at most two
+stages a fresh attempt budget. Existing completion, ZIP and review files are moved under
+`superseded/delivery-.../`; they are historical, not the active delivery. Re-review after changes.
+At most three reopens per run. Each stage permits at most two
 acceptance attempts; `check` validates without consuming one, so always `check` first. Exhaustion is a visible limitation,
 not permission to alter state manually. A follow-up run is a new run, not a hidden retry.
 If parent context is compacted, reload state, manifest, coverage, role prompt and relevant
@@ -97,3 +103,5 @@ sidecars should record host-supplied agent/model metadata if available; null oth
 STRUCTURALLY_VALIDATED_STATIC_AUDIT means hashes, report dependencies, IDs, source ranges,
 quotations and declared coverage passed local checks. It does NOT mean all files were read,
 all vulnerabilities found, reports semantically correct, or production usage approved.
+The required final review is a source-linked reader attestation, not an automatic semantic
+proof. A valid record must preserve unknowns and cannot silently promote a VERIFY rejection.

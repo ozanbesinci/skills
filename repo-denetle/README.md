@@ -1,6 +1,8 @@
-# Repo Denetle - 1.1.2 (kararlı)
+# Repo Denetle - 1.1.3 (kararlı)
 
-Kararlı kabul kapsamı: Windows / Claude Code tam akış. Codex keşif ve izinli GitHub kaynak alımı geçti; Codex ve Antigravity tam denetim kabulü açık.
+1.1.3 kararlı sürümdür. Windows kod testleri, Antigravity sekiz aşamalı akışı ve
+örnek raporun Codex içinde yapılan kaynak bağlı düzeltmesi/bağımsız son okuması doğrulandı.
+Uygulama ve sürüm bazındaki kanıt kapsamı `TEST-RESULTS.md` içindedir.
 
 GitHub deposunu (ya da yerel bir Git kopyasını) tek bir commit'e sabitleyip çok ajanlı,
 kanıta dayalı statik denetim yapar. Dört bağımsız rapor (BIZ, ARCH, REL, QA), bulgu doğrulama
@@ -24,6 +26,10 @@ altına taşınır. Önizleme `--dry-run`, kaldırma `--uninstall`. Kurulumdan s
 
 Çalışma klasörü varsayılanı `~/repo-denetle-calisma/<repo>-<zaman>`; `REPO_DENETLE_ROOT`
 ortam değişkeniyle değişir. Sonuç: o klasörde `repo-denetle-raporlar.zip`.
+LIFE sonrasında tam çıktı incelemesi ve `review.json` zorunludur. `review-template` boş
+form üretir; gerçek okuyucu kaynakları kontrol eder, `review-check` ardından `finalize`
+çalışır. Ayrıntı: `references/final-review.md`. Aşama yeniden açılırsa eski ZIP/inceleme
+`superseded/` altına taşınır; yeni sonuç gibi sunulmaz.
 
 ## Sınırlar
 Statik denetimdir: hedef deponun kodu, testi, kurulumu, CI'ı çalıştırılmaz; PR açılmaz.

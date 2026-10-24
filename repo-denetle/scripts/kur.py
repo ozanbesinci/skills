@@ -82,6 +82,9 @@ def clear_path(dst: Path,backup: Path,row: dict) -> None:
 def register_antigravity(home: Path,backup_root: Path,dry_run: bool) -> dict:
     cfg=home.joinpath(*AG_JSON); folder=home.joinpath(*TARGETS['antigravity'])/NAME
     row={'target':'antigravity','path':str(cfg)}
+    if not is_link(folder) and Path(os.path.realpath(folder))==source():
+        # A real package in the host's default discovery folder needs no relocation.
+        return {**row,'path':str(folder),'status':'already_at_source'}
     data=read_config(cfg); entries=data.setdefault('entries',[]); want=ag_entry()
     same=[e for e in entries if isinstance(e,dict) and e.get('path')==want['path']]
     covered=any('include_only' not in e or NAME in e.get('include_only',[]) for e in same)
@@ -105,6 +108,12 @@ def install(home: Path,targets: list[str],mode: str='link',dry_run: bool=False,b
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     backup_root=(backup_root or home/'.repo-denetle-yedek')/stamp
     src=source(); results=[]
+    # Check all targets before any mutation, including parents reached through junctions.
+    for target in targets:
+        dst=home.joinpath(*TARGETS[target])/NAME
+        resolved=Path(os.path.realpath(dst))
+        if resolved!=src and (src in resolved.parents or resolved in src.parents):
+            raise RuntimeError('Install path overlaps the package folder: '+str(dst))
     for target in targets:
         if target=='antigravity' and mode=='link':
             results.append(register_antigravity(home,backup_root,dry_run)); continue

@@ -37,6 +37,9 @@ are not application tests. No coverage percentages without actual measurement.
 Token/context optimization; maintenance/version/change management; consolidated gaps and
 roadmap. Independently inspect repetition, routing, cache, retries, cost telemetry if LLM
 exists. Bytes are not tokens. Also inspect technical debt, releases, compatibility,
+and actual deployment/use: disk presence alone proves neither loading frequency nor token
+cost. Keep historical components separate from current ones; separately versioned components
+need not share a version number. Quantities are measured, explicitly estimated, or unknown.
 migrations, locking, SBOM/licensing, CI/CD and docs. Read all four full audits and VERIFY;
 retain IDs, resolve contradictions with source, separate defects from planned features.
 Deliver original lifecycle findings, CONS mapping, ordered tasks, affected files, acceptance

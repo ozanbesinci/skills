@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -71,6 +72,17 @@ def complete(root,with_finding=False):
     c.atomic_json(root/'findings/consolidated.json',cons)
     for name in ('roadmap.md','executive-summary.md'): (root/name).write_text('Summary '+SHA)
     c.accept(root,'LIFE')
+    approve_fixture(root)
+
+
+def approve_fixture(root):
+    """Synthetic review fixture only; never a substitute for a real output review."""
+    review=c.review_template(root)
+    review['status']='approved'; review['reviewer']['name']='Synthetic test fixture'
+    for row in review['checks'].values(): row.update(status='passed',reason='Synthetic fixture checked')
+    for row in review['findings']: row.update(status='confirmed',reason='Synthetic fixture',evidence=[ev()])
+    c.atomic_json(root/'review.json',review)
+    return review
 
 class Temp(unittest.TestCase):
     def setUp(self):
@@ -307,6 +319,60 @@ TR='satır ığüşöç İĞÜŞÖÇ 🚀\n'.encode('utf-8')
 class GitBatchTests(unittest.TestCase):
     def setUp(self): self.tmp=tempfile.TemporaryDirectory()
     def tearDown(self): self.tmp.cleanup()
+    def test_local_cli_ignores_replaced_commit(self):
+        repo,sha=make_repo(self.tmp.name,{'a.py':BYTES})
+        def git(*args): return subprocess.run(['git','-C',str(repo),*args],capture_output=True,check=True).stdout
+        original_blob=git('rev-parse',sha+':a.py').decode().strip()
+        (repo/'a.py').write_bytes(b'replacement commit\n'); git('add','a.py')
+        git('-c','user.name=F','-c','user.email=f@example.invalid','commit','-qm','replacement')
+        replacement=git('rev-parse','HEAD').decode().strip(); git('replace',sha,replacement)
+        self.assertNotEqual(git('rev-parse',sha+':a.py').decode().strip(),original_blob)
+        out=Path(self.tmp.name)/'ws'
+        cp=subprocess.run([sys.executable,'-I',str(ROOT/'scripts/source.py'),'--local-git',str(repo),
+                           '--ref',sha,'--out',str(out)],capture_output=True)
+        self.assertEqual(cp.returncode,0,cp.stderr)
+        _,manifest,inventory=c.load(out)
+        self.assertEqual(manifest['commit'],sha)
+        self.assertEqual(inventory[0]['blob_sha'],original_blob)
+        self.assertEqual(c.get_source(out,inventory[0]),BYTES.decode())
+    def test_snapshot_ignores_replaced_blob(self):
+        repo,sha=make_repo(self.tmp.name,{'a.py':BYTES})
+        def git(*args,stdin=None):
+            return subprocess.run(['git','-C',str(repo),*args],input=stdin,capture_output=True,check=True).stdout
+        blob=git('rev-parse',sha+':a.py').decode().strip()
+        replacement=git('hash-object','-w','--stdin',stdin=b'replacement blob\n').decode().strip()
+        git('replace',blob,replacement)
+        self.assertNotEqual(git('cat-file','blob',blob),BYTES)
+        out=Path(self.tmp.name)/'ws'; out.mkdir()
+        s.snapshot(out,'a/b',sha,'',repo/'.git','guvence','native','local_git')
+        self.assertEqual(c.get_source(out,c.load(out)[2][0]),BYTES.decode())
+    def test_file_limit_applies_after_scope_selection(self):
+        files={f'other/f{i}.txt':BYTES for i in range(4)}
+        files.update({'pkg/a.py':BYTES,'README.md':b'shared metadata\n'})
+        repo,sha=make_repo(self.tmp.name,files)
+        with mock.patch.object(s,'MAX_FILES',2):
+            for n,scope in enumerate(('pkg','pkg/a.py')):
+                with self.subTest(scope=scope):
+                    out=Path(self.tmp.name)/f'ws{n}'; out.mkdir()
+                    result=s.snapshot(out,'a/b',sha,scope,repo/'.git','guvence','native','local_git')
+                    self.assertEqual(result['inventory_items'],2)
+                    self.assertEqual({i['path'] for i in c.load(out)[2]},{'pkg/a.py','README.md'})
+                    self.assertEqual(len(json.loads((out/'full-tree.json').read_text(encoding='utf-8'))),len(files))
+    def test_file_limit_still_rejects_oversized_scope(self):
+        repo,sha=make_repo(self.tmp.name,{'pkg/a.py':BYTES,'pkg/b.py':BYTES})
+        with mock.patch.object(s,'MAX_FILES',1):
+            for n,scope in enumerate(('','pkg')):
+                with self.subTest(scope=scope):
+                    out=Path(self.tmp.name)/f'ws{n}'; out.mkdir()
+                    with self.assertRaisesRegex(c.AuditError,'File limit exceeded'):
+                        s.snapshot(out,'a/b',sha,scope,repo/'.git','guvence','native','local_git')
+                    self.assertFalse((out/'blobs').exists())
+    def test_file_limit_counts_shared_candidates(self):
+        repo,sha=make_repo(self.tmp.name,{'pkg/a.py':BYTES,'README.md':BYTES})
+        out=Path(self.tmp.name)/'ws'; out.mkdir()
+        with mock.patch.object(s,'MAX_FILES',1):
+            with self.assertRaisesRegex(c.AuditError,'File limit exceeded'):
+                s.snapshot(out,'a/b',sha,'pkg/a.py',repo/'.git','guvence','native','local_git')
     def test_batch_snapshot_many_files_and_budget(self):
         files={f'd/f{i}.txt':f'line {i}\n'.encode() for i in range(60)}
         files.update({'tr.md':TR,'dup1.txt':b'same\n','dup2.txt':b'same\n','empty.txt':b'','big.bin':b'\0'*(s.MAX_FILE+1)})

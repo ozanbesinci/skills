@@ -4,7 +4,7 @@ test_bad_quote (test_package.EvidenceTests.test_bad_quote) ... ok
 test_bad_range (test_package.EvidenceTests.test_bad_range) ... ok
 test_coverage_does_not_count_gap (test_package.EvidenceTests.test_coverage_does_not_count_gap) ... ok
 test_good_quote (test_package.EvidenceTests.test_good_quote) ... ok
-test_symlink_blocked (test_package.EvidenceTests.test_symlink_blocked) ... skipped "symlink privilege unavailable: [WinError 1314] Gereken ayrıcalık istemci tarafından sağlanmıyor: 'C:\\\\Users\\\\OZANBE~1\\\\AppData\\\\Local\\\\Temp\\\\tmpetdn5qw5\\\\run\\\\blobs' -> 'C:\\\\Users\\\\OZANBE~1\\\\AppData\\\\Local\\\\Temp\\\\tmpetdn5qw5\\\\run\\\\link'"
+test_symlink_blocked (test_package.EvidenceTests.test_symlink_blocked) ... skipped "symlink privilege unavailable: [WinError 1314] Gereken ayrıcalık istemci tarafından sağlanmıyor: 'C:\\\\Users\\\\OZANBE~1\\\\AppData\\\\Local\\\\Temp\\\\tmp0swkpama\\\\run\\\\blobs' -> 'C:\\\\Users\\\\OZANBE~1\\\\AppData\\\\Local\\\\Temp\\\\tmp0swkpama\\\\run\\\\link'"
 test_traversal_blocked (test_package.EvidenceTests.test_traversal_blocked) ... ok
 test_unknown_path (test_package.EvidenceTests.test_unknown_path) ... ok
 test_valid_range (test_package.EvidenceTests.test_valid_range) ... ok
@@ -12,6 +12,11 @@ test_windows_path_blocked (test_package.EvidenceTests.test_windows_path_blocked)
 test_batch_snapshot_many_files_and_budget (test_package.GitBatchTests.test_batch_snapshot_many_files_and_budget) ... ok
 test_cli_read_is_utf8_on_a_pipe (test_package.GitBatchTests.test_cli_read_is_utf8_on_a_pipe) ... ok
 test_cli_source_isolated_mode_and_workspace_note (test_package.GitBatchTests.test_cli_source_isolated_mode_and_workspace_note) ... ok
+test_file_limit_applies_after_scope_selection (test_package.GitBatchTests.test_file_limit_applies_after_scope_selection) ... ok
+test_file_limit_counts_shared_candidates (test_package.GitBatchTests.test_file_limit_counts_shared_candidates) ... ok
+test_file_limit_still_rejects_oversized_scope (test_package.GitBatchTests.test_file_limit_still_rejects_oversized_scope) ... ok
+test_local_cli_ignores_replaced_commit (test_package.GitBatchTests.test_local_cli_ignores_replaced_commit) ... ok
+test_snapshot_ignores_replaced_blob (test_package.GitBatchTests.test_snapshot_ignores_replaced_blob) ... ok
 test_antigravity_registry_keeps_foreign_entries (test_package.InstallerTests.test_antigravity_registry_keeps_foreign_entries) ... ok
 test_copy_mode (test_package.InstallerTests.test_copy_mode) ... ok
 test_dry_run (test_package.InstallerTests.test_dry_run) ... ok
@@ -79,8 +84,24 @@ test_telemetry_not_fabricated (test_package.WorkflowTests.test_telemetry_not_fab
 test_unknown_role (test_package.WorkflowTests.test_unknown_role) ... ok
 test_verification_must_cover_findings (test_package.WorkflowTests.test_verification_must_cover_findings) ... ok
 test_wrong_commit (test_package.WorkflowTests.test_wrong_commit) ... ok
+test_archive_hardlink_cannot_overwrite_another_file (test_review_regressions.DeliveryRegressionTests.test_archive_hardlink_cannot_overwrite_another_file) ... ok
+test_completion_write_failure_restores_both_previous_files (test_review_regressions.DeliveryRegressionTests.test_completion_write_failure_restores_both_previous_files) ... ok
+test_final_delivery_rejects_dispatch_and_telemetry_until_reopen (test_review_regressions.DeliveryRegressionTests.test_final_delivery_rejects_dispatch_and_telemetry_until_reopen) ... ok
+test_final_review_cannot_silently_promote_a_rejected_verdict (test_review_regressions.DeliveryRegressionTests.test_final_review_cannot_silently_promote_a_rejected_verdict) ... ok
+test_final_review_required (test_review_regressions.DeliveryRegressionTests.test_final_review_required) ... ok
+test_first_delivery_marker_failure_leaves_no_success_files (test_review_regressions.DeliveryRegressionTests.test_first_delivery_marker_failure_leaves_no_success_files) ... ok
+test_new_life_finding_cannot_skip_final_review (test_review_regressions.DeliveryRegressionTests.test_new_life_finding_cannot_skip_final_review) ... ok
+test_reopen_invalidates_visible_delivery_and_preserves_previous_archive (test_review_regressions.DeliveryRegressionTests.test_reopen_invalidates_visible_delivery_and_preserves_previous_archive) ... ok
+test_review_becomes_stale_after_state_change (test_review_regressions.DeliveryRegressionTests.test_review_becomes_stale_after_state_change) ... ok
+test_review_template_is_never_an_approval (test_review_regressions.DeliveryRegressionTests.test_review_template_is_never_an_approval) ... ok
+test_unsupported_context_and_token_checks_block_delivery (test_review_regressions.DeliveryRegressionTests.test_unsupported_context_and_token_checks_block_delivery) ... ok
+test_unverified_finding_cannot_be_a_confirmed_summary_claim (test_review_regressions.DeliveryRegressionTests.test_unverified_finding_cannot_be_a_confirmed_summary_claim) ... ok
+test_zip_write_failure_keeps_previous_delivery (test_review_regressions.DeliveryRegressionTests.test_zip_write_failure_keeps_previous_delivery) ... ok
+test_default_install_from_antigravity_copy_keeps_its_source (test_review_regressions.InstallerRegressionTests.test_default_install_from_antigravity_copy_keeps_its_source) ... ok
+test_source_inside_later_target_is_rejected_before_any_install (test_review_regressions.InstallerRegressionTests.test_source_inside_later_target_is_rejected_before_any_install) ... ok
+test_missing_promisor_object_does_not_trigger_fetch (test_review_regressions.SourceReadRegressionTests.test_missing_promisor_object_does_not_trigger_fetch) ... ok
 
 ----------------------------------------------------------------------
-Ran 81 tests in 12.686s
+Ran 102 tests in 47.741s
 
 OK (skipped=1)
