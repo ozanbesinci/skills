@@ -1,0 +1,21 @@
+{
+  "default": "guvence",
+  "max_parallel": 2,
+  "dispatch_limit": 120,
+  "max_stage_attempts": 2,
+  "guvence": {
+    "audit_effort": "high",
+    "discovery_effort": "medium",
+    "planner_effort": "high"
+  },
+  "dengeli": {
+    "audit_effort": "high",
+    "discovery_effort": "medium",
+    "planner_effort": "medium"
+  },
+  "derin": {
+    "audit_effort": "xhigh_if_supported_else_high",
+    "discovery_effort": "high",
+    "planner_effort": "high"
+  }
+}
